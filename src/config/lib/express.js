@@ -10,6 +10,7 @@ const express = require('express');
 const config = require('../config');
 const { AppError, globalErrorHandler } = require(path.join(process.cwd(), 'src/modules/core/errors'));
 const nodeCache = require(path.join(process.cwd(), 'src/config/lib/nodecache'));
+const swaggerUI = require('swagger-ui-express');
 
 module.exports = () => {
   const app = express();
@@ -41,6 +42,9 @@ module.exports = () => {
   const globalConfig = config.getGlobalConfig();
   globalConfig.routes.forEach(routePath => require(path.resolve(routePath))(app));
   globalConfig.strategies.forEach(strategyPath => require(path.resolve(strategyPath))());
+
+  const swaggerDocs = require(path.join(process.cwd(), 'src/swagger.json'));
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
   app.all('*', (req, res, next) => {
     return next(new AppError(404, `Could not find ${req.originalUrl} on this server`));
