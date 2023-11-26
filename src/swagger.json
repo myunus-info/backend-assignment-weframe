@@ -184,12 +184,7 @@
           "404": {
             "description": "Task not found"
           }
-        },
-        "security": [
-          {
-            "api_key": []
-          }
-        ]
+        }
       },
       "patch": {
         "tags": ["Tasks"],
