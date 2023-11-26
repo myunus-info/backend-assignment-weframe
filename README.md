@@ -28,7 +28,7 @@ DB_PASS=<value>
 # Cookie secret
 COOKIE_SECRET=<value>
 
-# JWT Access Token secret and Expiration time
+# JWT Access Token Secret and Expiration time
 JWT_SECRET=<value>
 ```
 
