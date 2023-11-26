@@ -32,7 +32,7 @@ COOKIE_SECRET=<value>
 JWT_SECRET=<value>
 ```
 
-> Create a database in MongoDB named pixelwand
+> Create a database in MongoDB named task-manager
 
 ## NPM Scripts
 
