@@ -1,39 +1,35 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "This is a Task Manager application assignment",
+    "description": "This is the backend assignment assigned by Kodagu Now for the employee assessment",
     "version": "1.0.6",
-    "title": "Backend Assignment Weframe",
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-    }
+    "title": "Backend Assignment Weframe"
   },
   "host": "localhost:5000",
   "basePath": "/api",
   "tags": [
     {
       "name": "Users",
-      "description": "API for users in the system"
+      "description": "Everything about your users"
     },
     {
       "name": "Tasks",
-      "description": "API for tasks in the system"
+      "description": "Operations about tasks"
     }
   ],
   "schemes": ["http"],
   "paths": {
     "/users/signup": {
       "post": {
-        "tags": ["users"],
-        "summary": "Create a new user in the system",
-        "description": "This can only be done by the new user.",
+        "tags": ["Users"],
+        "summary": "Create user",
+        "description": "This can only be done by the logged in user.",
         "operationId": "createUser",
         "consumes": ["application/json"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "in": "user",
+            "in": "body",
             "name": "body",
             "description": "Created user object",
             "required": true,
@@ -43,38 +39,97 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "The user is created successfully!",
-            "schema": {
-              "type": "string"
-            }
+          "default": {
+            "description": "successful operation"
           }
         }
       }
     },
-    "/user/login": {
-      "get": {
-        "tags": ["user"],
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
         "summary": "Logs user into the system",
         "description": "",
         "operationId": "loginUser",
         "produces": ["application/json"],
         "parameters": [
           {
-            "name": "username",
-            "in": "query",
-            "description": "The user name for login",
+            "in": "body",
+            "name": "body",
+            "description": "Created user object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "X-Expires-After": {
+                "type": "string",
+                "format": "date-time",
+                "description": "date in UTC when token expires"
+              },
+              "X-Rate-Limit": {
+                "type": "string",
+                "format": "int32",
+                "description": "calls per hour allowed by the user"
+              }
+            },
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Invalid username/password supplied"
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "post": {
+        "tags": ["Tasks"],
+        "summary": "Create task",
+        "description": "This can only be done by the logged in task.",
+        "operationId": "createTask",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "header",
             "required": true,
             "type": "string"
           },
           {
-            "name": "password",
-            "in": "query",
-            "description": "The password for login in clear text",
+            "in": "body",
+            "name": "body",
+            "description": "Created user object",
             "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
           }
         ],
+        "responses": {
+          "default": {
+            "description": "successful operation"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
+      },
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get all tasks",
+        "description": "",
+        "operationId": "getTasks",
+        "produces": ["application/json"],
         "responses": {
           "200": {
             "description": "successful operation",
@@ -95,51 +150,171 @@
             }
           },
           "400": {
-            "description": "Invalid username/password supplied"
+            "description": "Invalid Input supplied"
           }
         }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Find task by ID",
+        "description": "Returns a single task",
+        "operationId": "getTaskById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of task to return",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        },
+        "security": [
+          {
+            "api_key": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["Tasks"],
+        "summary": "Find task by ID",
+        "description": "Returns a single task",
+        "operationId": "updateTaskById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task id to update",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Update task object",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Tasks"],
+        "summary": "Find task by ID",
+        "description": "Returns a single task",
+        "operationId": "deleteTaskById",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "jwt",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of task to delete",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Task not found"
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
       }
     }
   },
   "definitions": {
-    "ApiResponse": {
+    "User": {
       "type": "object",
       "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "type": {
+        "username": {
           "type": "string"
         },
-        "message": {
+        "password": {
           "type": "string"
         }
       }
     },
-
-    "User": {
+    "Task": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "username": {
+        "title": {
           "type": "string"
         },
-
-        "password": {
+        "description": {
           "type": "string"
+        },
+        "assignedUser": {
+          "type": "string"
+        },
+        "dueDate": {
+          "type": "string"
+        },
+        "completed": {
+          "type": "boolean"
         }
-      },
-      "xml": {
-        "name": "User"
       }
     }
-  },
-  "externalDocs": {
-    "description": "Find out more about Swagger",
-    "url": "http://swagger.io"
   }
 }
