@@ -44,4 +44,4 @@ $ npm test             # development test
 
 ## API Documentation
 
-Go to `/api-docs` for Swagger Documentation of the API.
+Go to `http://localhost:5000/api-docs` for Swagger Documentation of the API.
