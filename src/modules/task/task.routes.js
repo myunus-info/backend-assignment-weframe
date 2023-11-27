@@ -8,6 +8,8 @@ const UserStrategy = require(path.join(
 module.exports = app => {
   app.route('/api/tasks').post(UserStrategy, taskController.createTask).get(taskController.getAllTasks);
 
+  app.get('/api/tasks/stats', taskController.calculateWeeklyCompletedTasks);
+
   app
     .route('/api/tasks/:id')
     .get(taskController.getTaskById)

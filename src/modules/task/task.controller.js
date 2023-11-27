@@ -85,10 +85,38 @@ const deleteTaskById = asyncHandler(async (req, res, next) => {
   });
 });
 
+const calculateWeeklyCompletedTasks = asyncHandler(async (req, res, next) => {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const stats = await Task.aggregate([
+    {
+      $match: {
+        completed: true,
+        updatedAt: { $gte: sevenDaysAgo },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        completedTasksCount: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const completedTasksCount = (stats[0] && stats[0].completedTasksCount) || 0;
+
+  res.status(200).json({
+    status: 'success',
+    completedTasksCountInLastSevenDays: completedTasksCount,
+  });
+});
+
 module.exports = {
   createTask,
   getAllTasks,
   getTaskById,
   updateTaskById,
   deleteTaskById,
+  calculateWeeklyCompletedTasks,
 };

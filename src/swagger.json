@@ -155,6 +155,38 @@
         }
       }
     },
+    "/tasks/stats": {
+      "get": {
+        "tags": ["Tasks"],
+        "summary": "Get completed tasks count in last seven days",
+        "description": "",
+        "operationId": "getTaskStats",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "headers": {
+              "X-Expires-After": {
+                "type": "string",
+                "format": "date-time",
+                "description": "date in UTC when token expires"
+              },
+              "X-Rate-Limit": {
+                "type": "integer",
+                "format": "int32",
+                "description": "calls per hour allowed by the user"
+              }
+            },
+            "schema": {
+              "type": "string"
+            }
+          },
+          "400": {
+            "description": "Invalid Input supplied"
+          }
+        }
+      }
+    },
     "/tasks/{id}": {
       "get": {
         "tags": ["Tasks"],
