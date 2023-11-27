@@ -36,6 +36,7 @@ module.exports = () => {
 
   app.use(cookieParser(nodeCache.getValue('COOKIE_SECRET')));
   app.use(express.json());
+  app.use('/', (req, res) => res.send('Welcome to our website!'));
   app.set('port', nodeCache.getValue('PORT'));
   // swaggerDocs(app, app.get('port'));
 
